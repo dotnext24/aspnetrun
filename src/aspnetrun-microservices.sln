@@ -55,7 +55,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Logging", "BuildingB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebStatus", "WebApps\WebStatus\WebStatus.csproj", "{2E153186-BD9A-463E-A54B-29E50B5D00A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer", "WebApps\IdentityServer\IdentityServer.csproj", "{9920369C-EAE6-4023-B0EF-5CF738FAC8A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "WebApps\IdentityServer\IdentityServer.csproj", "{9920369C-EAE6-4023-B0EF-5CF738FAC8A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,12 +1,17 @@
+using IdentityServer.Data;
+using IdentityServer.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace IdentityServer
@@ -23,12 +28,22 @@ namespace IdentityServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<AuthDbContext>(options =>
+            options.UseNpgsql(Configuration.GetConnectionString("IdentityServerConnection")));
+
             // Configure Identity Server
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+         .AddEntityFrameworkStores<AuthDbContext>()
+         .AddDefaultTokenProviders();
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                .AddInMemoryApiScopes(Config.ApiScopes)
-                .AddInMemoryClients(Config.Clients)
-                .AddTestUsers(Config.Users);
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddConfigurationStore(option =>
+                           option.ConfigureDbContext = builder => builder.UseNpgsql(Configuration.GetConnectionString("IdentityServerConnection"), options =>
+                           options.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name)))
+                    .AddOperationalStore(option =>
+                           option.ConfigureDbContext = builder => builder.UseNpgsql(Configuration.GetConnectionString("IdentityServerConnection"), options =>
+                           options.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name))); 
 
             // Additional configuration for ASP.NET Core Identity if needed
             services.AddAuthentication();
@@ -51,7 +66,10 @@ namespace IdentityServer
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            DatabaseInitializer.Initialize(app);
             app.UseIdentityServer();
+
             app.UseRouting();
            
             app.UseAuthorization();
