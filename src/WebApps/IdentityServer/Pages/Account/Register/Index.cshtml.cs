@@ -57,12 +57,11 @@ namespace IdentityServer.Pages.Register
         public async Task<IActionResult> OnPost()
         {
             // check if we are in the context of an authorization request
-            var context = await _interaction.GetAuthorizationContextAsync(Input.ReturnUrl);
-
+            
             var user = await _userManager.FindByNameAsync(Input.Username);
             if (user != null)
             {
-                ModelState.AddModelError("Input.Username", "Invalid username");
+                ModelState.AddModelError("Input.Username", "Duplicate username");
             }
 
 
@@ -73,12 +72,12 @@ namespace IdentityServer.Pages.Register
                     Email = Input.Email,
                     UserName=Input.Username
                     
-                });
+                },Input.Password);
 
                 
                 if (result.Succeeded)
                 {
-                    return Redirect(Input.ReturnUrl);
+                    return Redirect(Input.ReturnUrl ?? "~/");
                 }
                 
                 ModelState.AddModelError(string.Empty, "Something went wrong...");
